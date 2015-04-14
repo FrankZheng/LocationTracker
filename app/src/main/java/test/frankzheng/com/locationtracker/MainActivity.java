@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
@@ -19,11 +20,19 @@ public class MainActivity extends ActionBarActivity implements AMapLocationListe
 
     private LocationManagerProxy mLocationManagerProxy;
 
+    private double mLat;
+    private double mLng;
+
+
+    private TextView mTxtLog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mTxtLog = (TextView)findViewById(R.id.main_txt_log);
 
         init();
     }
@@ -65,22 +74,39 @@ public class MainActivity extends ActionBarActivity implements AMapLocationListe
         return super.onOptionsItemSelected(item);
     }
 
+    private void log(String tag, String message) {
+        Log.d(tag, message);
+
+        mTxtLog.append(message + "\n");
+    }
+
     @Override
     public void onLocationChanged(AMapLocation amapLocation) {
         if (amapLocation != null
                 && amapLocation.getAMapException().getErrorCode() == 0) {
-            String coordinate = amapLocation.getLatitude() + "  " + amapLocation.getLongitude();
+
+            double lat = amapLocation.getLatitude();
+            double lng = amapLocation.getLongitude();
+
+            if(mLat != 0 && mLng != 0) {
+                double distance = gps2m(lat, lng, mLat, mLng);
+                log(TAG, "delta distance:  " + distance);
+            }
+            mLat = lat;
+            mLng = lng;
+
+            String coordinate = mLat + " " + mLng;
             String provider = amapLocation.getProvider();
             String address = amapLocation.getAddress();
             float accuracy = amapLocation.getAccuracy();
 
-            Log.d(TAG, "coordinate is " + coordinate);
-            Log.d(TAG, "provider is " + provider);
-            Log.d(TAG, "address is " + address);
-            Log.d(TAG, "accuracy is " + accuracy);
+            log(TAG, "coordinate: " + coordinate);
+            log(TAG, "provider: " + provider);
+            log(TAG, "address: " + address);
+            log(TAG, "accuracy: " + accuracy);
 
         } else {
-            Log.e(TAG, "Location Error " + amapLocation.getAMapException().getErrorMessage());
+            log(TAG, "Location Error: " + amapLocation.getAMapException().getErrorMessage());
         }
     }
 
@@ -102,5 +128,19 @@ public class MainActivity extends ActionBarActivity implements AMapLocationListe
     @Override
     public void onProviderDisabled(String s) {
 
+    }
+
+    private final double EARTH_RADIUS = 6378137.0;
+    private double gps2m(double lat_a, double lng_a, double lat_b, double lng_b) {
+        double radLat1 = (lat_a * Math.PI / 180.0);
+        double radLat2 = (lat_b * Math.PI / 180.0);
+        double a = radLat1 - radLat2;
+        double b = (lng_a - lng_b) * Math.PI / 180.0;
+        double s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2)
+                + Math.cos(radLat1) * Math.cos(radLat2)
+                * Math.pow(Math.sin(b / 2), 2)));
+        s = s * EARTH_RADIUS;
+        s = Math.round(s * 10000) / 10000;
+        return s;
     }
 }
