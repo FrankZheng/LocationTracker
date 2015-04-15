@@ -48,7 +48,7 @@ public class MainActivity extends ActionBarActivity implements AMapLocationListe
         // 其中如果间隔时间为-1，则定位只定一次,
         // 在单次定位情况下，定位无论成功与否，都无需调用removeUpdates()方法移除请求，定位sdk内部会移除
         mLocationManagerProxy.requestLocationData(
-                LocationProviderProxy.AMapNetwork, 60 * 1000, 15, this);
+                LocationProviderProxy.AMapNetwork, 30 * 1000, 15, this);
     }
 
 
