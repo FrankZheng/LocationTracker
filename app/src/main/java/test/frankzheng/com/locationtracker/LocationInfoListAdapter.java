@@ -41,7 +41,11 @@ public class LocationInfoListAdapter extends ArrayAdapter<LocationInfo> {
         //set data
         //time
         Date date = new Date(item.time);
-        holder.mTime.setText(DATE_FMT.format(date));
+        String gpsTime = String.format("GPS time: %s", DATE_FMT.format(new Date(item.gpsTime)));
+        holder.mGpsTime.setText(gpsTime);
+
+        String time = String.format("time: %s", DATE_FMT.format(new Date(item.time)));
+        holder.mTime.setText(time);
 
         holder.mLat.setText(String.valueOf(item.lat));
         holder.mLng.setText(String.valueOf(item.lng));
@@ -51,12 +55,15 @@ public class LocationInfoListAdapter extends ArrayAdapter<LocationInfo> {
         holder.mProvider.setText(String.valueOf(item.provider));
         holder.mAddress.setText(String.valueOf(item.address));
 
+
         return convertView;
     }
 
     static class ViewHolder {
         @InjectView(R.id.row_location_info_time)
         TextView mTime;
+        @InjectView(R.id.row_location_info_gps_time)
+        TextView mGpsTime;
         @InjectView(R.id.row_location_info_lat)
         TextView mLat;
         @InjectView(R.id.row_location_info_lng)

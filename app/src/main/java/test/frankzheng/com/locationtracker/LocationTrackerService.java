@@ -13,6 +13,8 @@ import com.amap.api.location.AMapLocationListener;
 import com.amap.api.location.LocationManagerProxy;
 import com.amap.api.location.LocationProviderProxy;
 
+import java.util.Date;
+
 /**
  * Created by zhengxiaoqiang on 15/4/15.
  */
@@ -64,8 +66,11 @@ public class LocationTrackerService extends Service implements AMapLocationListe
     }
 
     private void setupLocationManager() {
-        // 初始化定位，只采用网络定位
+        // 初始化定位
         mLocationManagerProxy = LocationManagerProxy.getInstance(this);
+
+        //这里如果禁止掉gps，就是使用网络定位，如果enable，就是混合定位
+        //如果是混合定位，需要查询provider，如果是GPS，则有些信息会缺失。
         mLocationManagerProxy.setGpsEnable(false);
         // 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
         // 注意设置合适的定位时间的间隔（最小间隔支持为2000ms），并且在合适时间调用removeUpdates()方法来取消定位请求
@@ -115,7 +120,8 @@ public class LocationTrackerService extends Service implements AMapLocationListe
             info.lat = mLat;
             info.lng = mLng;
             info.deltaDistance = deltaDistance;
-            info.time = time;
+            info.gpsTime = time;
+            info.time = new Date().getTime(); //current time
 
             LocationModel.getInstance().addLocationInfo(info);
 
