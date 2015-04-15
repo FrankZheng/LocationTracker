@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
@@ -13,18 +14,21 @@ import com.amap.api.location.AMapLocationListener;
 import com.amap.api.location.LocationManagerProxy;
 import com.amap.api.location.LocationProviderProxy;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
-public class MainActivity extends ActionBarActivity implements AMapLocationListener {
+
+public class MainActivity extends ActionBarActivity implements LocationModel.Listener {
 
     private static final String TAG = "ActionBarActivity";
 
     private LocationManagerProxy mLocationManagerProxy;
 
-    private double mLat;
-    private double mLng;
 
+    @InjectView(R.id.main_list)
+    ListView mList;
 
-    private TextView mTxtLog;
+    LocationInfoListAdapter mListAdapter;
 
 
     @Override
@@ -32,23 +36,17 @@ public class MainActivity extends ActionBarActivity implements AMapLocationListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mTxtLog = (TextView)findViewById(R.id.main_txt_log);
+        //inject views
+        ButterKnife.inject(this);
 
-        init();
-    }
+        mListAdapter = new LocationInfoListAdapter(this, LocationModel.getInstance().getLocationInfoList());
+        mList.setAdapter(mListAdapter);
+
+        LocationModel.getInstance().addListener(this);
 
 
-    private void init() {
-        // 初始化定位，只采用网络定位
-        mLocationManagerProxy = LocationManagerProxy.getInstance(this);
-        mLocationManagerProxy.setGpsEnable(false);
-        // 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
-        // 注意设置合适的定位时间的间隔（最小间隔支持为2000ms），并且在合适时间调用removeUpdates()方法来取消定位请求
-        // 在定位结束后，在合适的生命周期调用destroy()方法
-        // 其中如果间隔时间为-1，则定位只定一次,
-        // 在单次定位情况下，定位无论成功与否，都无需调用removeUpdates()方法移除请求，定位sdk内部会移除
-        mLocationManagerProxy.requestLocationData(
-                LocationProviderProxy.AMapNetwork, 30 * 1000, 15, this);
+        //start service
+        LocationTrackerService.start(this);
     }
 
 
@@ -74,73 +72,16 @@ public class MainActivity extends ActionBarActivity implements AMapLocationListe
         return super.onOptionsItemSelected(item);
     }
 
-    private void log(String tag, String message) {
-        Log.d(tag, message);
-
-        mTxtLog.append(message + "\n");
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy");
+        LocationModel.getInstance().removeListener(this);
     }
+
 
     @Override
-    public void onLocationChanged(AMapLocation amapLocation) {
-        if (amapLocation != null
-                && amapLocation.getAMapException().getErrorCode() == 0) {
-
-            double lat = amapLocation.getLatitude();
-            double lng = amapLocation.getLongitude();
-
-            if(mLat != 0 && mLng != 0) {
-                double distance = gps2m(lat, lng, mLat, mLng);
-                log(TAG, "delta distance:  " + distance);
-            }
-            mLat = lat;
-            mLng = lng;
-
-            String coordinate = mLat + " " + mLng;
-            String provider = amapLocation.getProvider();
-            String address = amapLocation.getAddress();
-            float accuracy = amapLocation.getAccuracy();
-
-            log(TAG, "coordinate: " + coordinate);
-            log(TAG, "provider: " + provider);
-            log(TAG, "address: " + address);
-            log(TAG, "accuracy: " + accuracy);
-
-        } else {
-            log(TAG, "Location Error: " + amapLocation.getAMapException().getErrorMessage());
-        }
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-
-    }
-
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String s) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String s) {
-
-    }
-
-    private final double EARTH_RADIUS = 6378137.0;
-    private double gps2m(double lat_a, double lng_a, double lat_b, double lng_b) {
-        double radLat1 = (lat_a * Math.PI / 180.0);
-        double radLat2 = (lat_b * Math.PI / 180.0);
-        double a = radLat1 - radLat2;
-        double b = (lng_a - lng_b) * Math.PI / 180.0;
-        double s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2)
-                + Math.cos(radLat1) * Math.cos(radLat2)
-                * Math.pow(Math.sin(b / 2), 2)));
-        s = s * EARTH_RADIUS;
-        s = Math.round(s * 10000) / 10000;
-        return s;
+    public void onDataChanged() {
+        mListAdapter.notifyDataSetChanged();
     }
 }
