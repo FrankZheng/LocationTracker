@@ -46,7 +46,11 @@ public class MainActivity extends ActionBarActivity implements LocationModel.Lis
 
 
         //start service
-        LocationTrackerService.start(this);
+        //LocationTrackerService.start(this);
+
+        //set the alarm
+        AlarmController.getInstance().init(this);
+        AlarmController.getInstance().startAlarm();
     }
 
 
@@ -84,4 +88,6 @@ public class MainActivity extends ActionBarActivity implements LocationModel.Lis
     public void onDataChanged() {
         mListAdapter.notifyDataSetChanged();
     }
+
+
 }
