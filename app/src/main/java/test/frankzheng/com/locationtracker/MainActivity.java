@@ -1,6 +1,7 @@
 package test.frankzheng.com.locationtracker;
 
 import android.location.Location;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,17 +19,14 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 
-public class MainActivity extends ActionBarActivity implements LocationModel.Listener {
+public class MainActivity extends ActionBarActivity {
 
-    private static final String TAG = "ActionBarActivity";
+    private static final String TAG = MainActivity.class.getSimpleName();
 
-    private LocationManagerProxy mLocationManagerProxy;
+    @InjectView(R.id.main_pager)
+    ViewPager mViewPager;
 
-
-    @InjectView(R.id.main_list)
-    ListView mList;
-
-    LocationInfoListAdapter mListAdapter;
+    PageAdapter mPageAdapter;
 
 
     @Override
@@ -39,14 +37,31 @@ public class MainActivity extends ActionBarActivity implements LocationModel.Lis
         //inject views
         ButterKnife.inject(this);
 
-        mListAdapter = new LocationInfoListAdapter(this, LocationModel.getInstance().getLocationInfoList());
-        mList.setAdapter(mListAdapter);
+        mPageAdapter = new PageAdapter(MainApplication.getAppContext(), getSupportFragmentManager());
 
-        LocationModel.getInstance().addListener(this);
+
+        Bundle arg0 = new Bundle();
+        arg0.putString(LocationInfoListFragment.LOCATION_MODEL_KEY, LocationModelManager.KEY_AMAP_SERVICE);
+        mPageAdapter.addPage("AMap Service", LocationInfoListFragment.class, arg0);
+
+        Bundle arg1 = new Bundle();
+        arg1.putString(LocationInfoListFragment.LOCATION_MODEL_KEY, LocationModelManager.KEY_AMAP);
+        mPageAdapter.addPage("AMap Alarm", LocationInfoListFragment.class, arg1);
+
+        Bundle arg2 = new Bundle();
+        arg2.putString(LocationInfoListFragment.LOCATION_MODEL_KEY, LocationModelManager.KEY_MT_SDK);
+        mPageAdapter.addPage("MTSdk Alarm", LocationInfoListFragment.class, arg2);
+
+
+        mViewPager.setAdapter(mPageAdapter);
+        mViewPager.setOffscreenPageLimit(2);
+
+        LocationModelManager.initModels(MainApplication.getAppContext());
+
 
 
         //start service
-        //LocationTrackerService.start(this);
+        LocationTrackerService.start(this);
 
         //set the alarm
         AlarmController.getInstance().init(this);
@@ -80,14 +95,12 @@ public class MainActivity extends ActionBarActivity implements LocationModel.Lis
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
-        LocationModel.getInstance().removeListener(this);
     }
 
 
-    @Override
-    public void onDataChanged() {
-        mListAdapter.notifyDataSetChanged();
-    }
+
+
+
 
 
 }

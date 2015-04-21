@@ -3,31 +3,37 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <TextView
         android:id="@+id/row_location_info_gps_time"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        style="@style/DefaultStyle"/>
 
     <TextView
         android:id="@+id/row_location_info_time"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        style="@style/DefaultStyle"/>
 
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        style="@style/DefaultStyle">
 
         <TextView
             android:id="@+id/row_location_info_lat"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            style="@style/DefaultStyle"/>
 
         <TextView
             android:layout_marginLeft="20dp"
             android:id="@+id/row_location_info_lng"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            style="@style/DefaultStyle"/>
 
     </LinearLayout>
 
@@ -40,25 +46,29 @@
         <TextView
             android:id="@+id/row_location_info_provider"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            style="@style/DefaultStyle"/>
 
         <TextView
             android:layout_marginLeft="20dp"
             android:id="@+id/row_location_info_delta_distance"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            style="@style/DefaultStyle"/>
 
         <TextView
             android:layout_marginLeft="20dp"
             android:id="@+id/row_location_info_accuracy"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            style="@style/DefaultStyle"/>
 
     </LinearLayout>
 
     <TextView
         android:id="@+id/row_location_info_address"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        style="@style/DefaultStyle"/>
 
 </LinearLayout>

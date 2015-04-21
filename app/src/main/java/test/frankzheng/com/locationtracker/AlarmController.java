@@ -32,7 +32,8 @@ public class AlarmController {
         alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
 
         Intent intent = new Intent(context, AlarmReceiver.class);
-        alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        //intent.putExtra("Key", "my word");
+        alarmIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     public void startAlarm() {
@@ -42,7 +43,7 @@ public class AlarmController {
         LogUtils.d(TAG, "status is " + status.toString());
 
         long triggerAtMillis = SystemClock.elapsedRealtime();
-        long intervalMillis = 10 * 1000;
+        long intervalMillis = 10 * 1000; //30s
 
         alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
                 triggerAtMillis,

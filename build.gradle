@@ -3,6 +3,8 @@
 buildscript {
     repositories {
         jcenter()
+	    mavenCentral()
+        mavenLocal()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.1.0'
@@ -14,6 +16,19 @@ buildscript {
 
 allprojects {
     repositories {
+
+	    maven {
+            url "http://192.168.11.231:8081/nexus/content/groups/public"
+        }
+        maven {
+            url "http://192.168.11.231:8081/nexus/content/groups/public-snapshots"
+        }
+        maven {
+            url "http://JRAF.org/static/maven/2"
+        }
+
+        mavenLocal()
+        mavenCentral()
         jcenter()
     }
 }

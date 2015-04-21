@@ -23,6 +23,8 @@ public class LocationTrackerService extends Service implements AMapLocationListe
 
     private LocationManagerProxy mLocationManagerProxy;
 
+    private LocationModel locationModel = LocationModelManager.getModel(LocationModelManager.KEY_AMAP_SERVICE);
+
     private double mLat;
     private double mLng;
 
@@ -78,7 +80,9 @@ public class LocationTrackerService extends Service implements AMapLocationListe
         // 其中如果间隔时间为-1，则定位只定一次,
         // 在单次定位情况下，定位无论成功与否，都无需调用removeUpdates()方法移除请求，定位sdk内部会移除
         mLocationManagerProxy.requestLocationData(
-                LocationProviderProxy.AMapNetwork, 30 * 1000, 15, this);
+                LocationProviderProxy.AMapNetwork, 10 * 1000, 15, this);
+
+        //mLocationManagerProxy.getLastKnownLocation()
     }
 
     private void log(String tag, String message) {
@@ -123,7 +127,7 @@ public class LocationTrackerService extends Service implements AMapLocationListe
             info.gpsTime = time;
             info.time = new Date().getTime(); //current time
 
-            LocationModel.getInstance().addLocationInfo(info);
+            locationModel.addLocationInfo(info);
 
 
         } else {

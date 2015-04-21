@@ -12,6 +12,7 @@ public class LocationInfo {
     public String provider;
     public double deltaDistance;
     public long gpsTime; //time from gps locator.
+    public String source; //from AMap, MT SDK, ...
 
     public LocationInfo() {
 

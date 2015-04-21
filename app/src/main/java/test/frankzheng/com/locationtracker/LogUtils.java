@@ -7,9 +7,14 @@ import android.util.Log;
  */
 public class LogUtils {
 
+    public static boolean Debug = true;
+
     public static void d(String tag, String fmt, Object... args) {
         String message = String.format(fmt, args);
-        Log.d(tag, message);
+
+        if(Debug) {
+            Log.d(tag, message);
+        }
     }
 
 }
